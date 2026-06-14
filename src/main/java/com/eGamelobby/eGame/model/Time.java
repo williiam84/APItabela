@@ -4,13 +4,22 @@ public class Time {
 
     private String nome;
     private String grupo;
+    private int pontos;
 
     public Time() {
+        this.pontos = 0; // padrão quando criar time
     }
 
     public Time(String nome, String grupo) {
         this.nome = nome;
         this.grupo = grupo;
+        this.pontos = 0;
+    }
+
+    public Time(String nome, String grupo, int pontos) {
+        this.nome = nome;
+        this.grupo = grupo;
+        this.pontos = pontos;
     }
 
     public String getNome() {
@@ -27,5 +36,13 @@ public class Time {
 
     public void setGrupo(String grupo) {
         this.grupo = grupo;
+    }
+
+    public int getPontos() {
+        return pontos;
+    }
+
+    public void setPontos(int pontos) {
+        this.pontos = pontos;
     }
 }
