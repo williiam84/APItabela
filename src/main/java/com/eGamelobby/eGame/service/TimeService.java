@@ -13,7 +13,7 @@ public class TimeService {
     private final List<Time> times = new ArrayList<>();
 
     // =========================
-    // LISTAR TODOS (ranking)
+    // LISTAR TODOS (RANKING)
     // =========================
     public List<Time> listarTimes() {
         return times.stream()
@@ -38,24 +38,34 @@ public class TimeService {
             throw new IllegalArgumentException("Grupo é obrigatório.");
         }
 
-        String grupo = time.getGrupo().toUpperCase();
+        String grupo = time.getGrupo().trim().toUpperCase();
 
-        if (!grupo.equals("A") && !grupo.equals("B") && !grupo.equals("C")) {
-            throw new IllegalArgumentException("Grupo inválido. Use A, B ou C.");
+        if (!grupo.equals("A")
+                && !grupo.equals("B")
+                && !grupo.equals("C")
+                && !grupo.equals("D")) {
+
+            throw new IllegalArgumentException(
+                    "Grupo inválido. Utilize A, B, C ou D."
+            );
         }
 
         boolean existe = times.stream()
-                .anyMatch(t -> t.getNome().equalsIgnoreCase(time.getNome()));
+                .anyMatch(t ->
+                        t.getNome().trim()
+                                .equalsIgnoreCase(time.getNome().trim())
+                );
 
         if (existe) {
-            throw new IllegalArgumentException("Já existe um time com este nome.");
+            throw new IllegalArgumentException(
+                    "Já existe um time com este nome."
+            );
         }
 
         time.setNome(time.getNome().trim());
         time.setGrupo(grupo);
 
-        // 🔥 garante pontos iniciais
-        if (time.getPontos() == 0) {
+        if (time.getPontos() < 0) {
             time.setPontos(0);
         }
 
@@ -70,11 +80,13 @@ public class TimeService {
     public void removerTime(String nome) {
 
         if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome do time é obrigatório.");
+            throw new IllegalArgumentException(
+                    "Nome do time é obrigatório."
+            );
         }
 
         boolean removido = times.removeIf(
-                t -> t.getNome().equalsIgnoreCase(nome)
+                t -> t.getNome().equalsIgnoreCase(nome.trim())
         );
 
         if (!removido) {
@@ -83,7 +95,7 @@ public class TimeService {
     }
 
     // =========================
-    // LISTAR POR GRUPO (RANKING)
+    // LISTAR POR GRUPO
     // =========================
     public List<Time> listarPorGrupo(String grupo) {
 
@@ -91,7 +103,7 @@ public class TimeService {
             throw new IllegalArgumentException("Grupo inválido.");
         }
 
-        String g = grupo.toUpperCase();
+        String g = grupo.trim().toUpperCase();
 
         return times.stream()
                 .filter(t -> t.getGrupo().equalsIgnoreCase(g))
@@ -100,22 +112,69 @@ public class TimeService {
     }
 
     // =========================
-    // 🔥 NOVO: ADICIONAR PONTOS
+    // ADICIONAR PONTOS
     // =========================
     public void adicionarPontos(String nome, int pontos) {
+
+        if (pontos <= 0) {
+            throw new IllegalArgumentException(
+                    "Os pontos devem ser maiores que zero."
+            );
+        }
 
         Time time = times.stream()
                 .filter(t -> t.getNome().equalsIgnoreCase(nome))
                 .findFirst()
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Time não encontrado.")
+                        new IllegalArgumentException(
+                                "Time não encontrado."
+                        )
                 );
 
         time.setPontos(time.getPontos() + pontos);
     }
 
     // =========================
-    // 🔥 NOVO: RANKING GERAL
+    // REMOVER PONTOS
+    // =========================
+    public void removerPontos(String nome, int pontos) {
+
+        if (pontos <= 0) {
+            throw new IllegalArgumentException(
+                    "Os pontos devem ser maiores que zero."
+            );
+        }
+
+        Time time = times.stream()
+                .filter(t -> t.getNome().equalsIgnoreCase(nome))
+                .findFirst()
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Time não encontrado."
+                        )
+                );
+
+        int novosPontos = Math.max(0, time.getPontos() - pontos);
+        time.setPontos(novosPontos);
+    }
+
+    // =========================
+    // BUSCAR TIME
+    // =========================
+    public Time buscarTime(String nome) {
+
+        return times.stream()
+                .filter(t -> t.getNome().equalsIgnoreCase(nome))
+                .findFirst()
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Time não encontrado."
+                        )
+                );
+    }
+
+    // =========================
+    // RANKING GERAL
     // =========================
     public List<Time> ranking() {
         return listarTimes();
